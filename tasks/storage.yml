@@ -9,9 +9,6 @@
     - name: Format
       command: mkfs.btrfs -f {{ raid_md_device }}
 
-    - name: Scan
-      command: mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf
-
     - name: Update initramfs
       command: update-initramfs -u
     
@@ -27,6 +24,12 @@
 
     - name: Reload
       command: systemctl daemon-reload
+
+    - name: Create mount point
+      ansible.builtin.file:
+        path: "{{ mount_point }}"
+        state: directory
+        mode: "0755"
 
     - name: Mount
       command: mount -a
