@@ -22,7 +22,7 @@
       command: "microk8s enable metallb:{{ ansible_host }}/32"
 
     - name: Create the microk8s config directory
-      file:
+      ansible.builtin.file:
         path: $HOME/.kube
         state: directory
         mode: '0755'
