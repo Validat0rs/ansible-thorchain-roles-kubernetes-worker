@@ -64,7 +64,7 @@
       command: yes | NAME=daemons TYPE=daemons NET=mainnet make install
       args:
         chdir: /usr/src/thorchain-node-launcher/node-launcher
-    when: launch_daemons == 'true'
+    when: launch_daemons == "true"
 
   - name: THORNode
     block:
@@ -77,4 +77,4 @@
       command: yes | NAME={{ namespace }} TYPE=validator NET=mainnet make install
       args:
         chdir: /usr/src/thorchain-node-launcher/node-launcher
-    when: launch_thornode == 'true'
+    when: launch_thornode == "true"
