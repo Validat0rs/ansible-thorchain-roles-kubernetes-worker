@@ -9,8 +9,17 @@
         classic: true
         channel: 1.30/stable
 
-    - name: Enable microk8s services
-      command: microk8s enable dns hostpath-storage metrics-server metallb
+    - name: Enable dns
+      command: microk8s enable dns
+
+    - name: Enable hostpath-storage
+      command: microk8s enable hostpath-storage
+
+    - name: Enable metrics-server
+      command: microk8s enable metrics-server
+
+    - name: Enable metallb
+      command: "microk8s enable metallb:{{ ansible_host }}"
 
     - name: Create the microk8s config directory
       ansible.builtin.file:

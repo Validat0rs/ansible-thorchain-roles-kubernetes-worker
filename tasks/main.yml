@@ -4,3 +4,6 @@
 
 - name: Storage
   include_file: storage.yml
+
+- name: Launch
+  include_file: launch.yml

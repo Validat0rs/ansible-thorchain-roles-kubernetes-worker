@@ -1,0 +1,80 @@
+---
+- name: Launch
+  block:
+  - name: Checkout repo
+    git:
+      repo: https://github.com/Validat0rs/thorchain-node-launcher
+      dest: /usr/src/thorchain-node-launcher
+
+  - name: Checkout master
+    command: git checkout master
+    args:
+      chdir: /usr/src/thorchain-node-launcher
+
+  - name: Set git config
+    command: |
+      git config pull.rebase true
+      git config rebase.autoStash true
+    args:
+      chdir: /usr/src/thorchain-node-launcher
+
+  - name: Install helm
+    command: make helm
+    args:
+      chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+  - name: Install helm-plugins
+    command: make helm-plugins
+    args:
+      chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+  - name: Install tools
+    command: make tools
+    args:
+      chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+  - name: Destroy loki
+    command: make destroy-loki
+    args:
+      chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+  - name: Destroy prometheus
+    command: make destroy-prometheus
+    args:
+      chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+  - name: Destroy dashboard
+    command: make destroy-dashboard
+    args:
+      chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+  - name: Destroy metrics
+    command: make destroy-metrics
+    args:
+      chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+  - name: Damons
+    block:
+    - name: Checkout branch
+      command: git checkout feat/daemons
+      args:
+        chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+    - name: Install
+      command: yes | NAME=daemons TYPE=daemons NET=mainnet make install
+      args:
+        chdir: /usr/src/thorchain-node-launcher/node-launcher
+    when: launch_daemons == true
+
+  - name: THORNode
+    block:
+    - name: Checkout branch
+      command: git checkout feat/thornode
+      args:
+        chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+    - name: Install
+      command: yes | NAME={{ namespace }} TYPE=validator NET=mainnet make install
+      args:
+        chdir: /usr/src/thorchain-node-launcher/node-launcher
+    when: launch_thornode == true
