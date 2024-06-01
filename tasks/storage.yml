@@ -4,11 +4,16 @@
   - name: mdadm
     block:
     - name: Configure
-      command: |
-        mdadm --create --verbose {{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices | replace(',', ' ') }}
-        mkfs.btrfs -f {{ raid_md_device }}
-        mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf
-        update-initramfs -u
+      command: mdadm --create --verbose {{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices | replace(',', ' ') }}
+
+    - name: Format
+      command: mkfs.btrfs -f {{ raid_md_device }}
+
+    - name: Scan
+      command: mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf
+
+    - name: Update initramfs
+      command: update-initramfs -u
     
     - name: Get device UUID
       command: blkid {{ raid_md_device }}
