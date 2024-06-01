@@ -44,10 +44,7 @@
       mode: "0644"
 
   - name: Apply config
-    k8s:
-      src: /tmp/nvme-hostpath-sc.yml
-      state: present
-      apply: true
+    command: kubectl apply -f /tmp/nvme-hostpath-sc.yml
 
   - name: Set default
     command: |
