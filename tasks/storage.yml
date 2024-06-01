@@ -14,7 +14,7 @@
 
     - name: Get device UUID
       shell: |
-        blkid {{ raid_md_device }} | awk '{ print $2 }' | sed -e's/UUID_SUB=//g' -e's/\"//g'
+        blkid {{ raid_md_device }} | awk '{ print $2 }' | sed -e's/UUID=//g' -e's/\"//g'
       register: blkid_uuid
 
     - name: Update /etc/fstab
