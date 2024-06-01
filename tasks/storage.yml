@@ -4,13 +4,13 @@
   - name: mdadm
     block:
     - name: Configure
-      command: mdadm --create --verbose {{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices | replace(',', ' ') }}
+      shell: mdadm --create --verbose {{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices | replace(',', ' ') }}
 
     - name: Format
-      command: mkfs.btrfs -f {{ raid_md_device }}
+      shell: mkfs.btrfs -f {{ raid_md_device }}
 
     - name: Update initramfs
-      command: update-initramfs -u
+      shell: update-initramfs -u
 
     - name: Get device UUID
       shell: |
@@ -24,7 +24,7 @@
         state: present
 
     - name: Reload
-      command: systemctl daemon-reload
+      shell: systemctl daemon-reload
 
     - name: Create mount point
       ansible.builtin.file:
@@ -33,7 +33,7 @@
         mode: "0755"
 
     - name: Mount
-      command: mount -a
+      shell: mount -a
     when: raid_setup == "true"
 
   - name: Copy config
@@ -45,9 +45,12 @@
       mode: "0644"
 
   - name: Apply config
-    command: kubectl apply -f /tmp/nvme-hostpath-sc.yml
+    shell: kubectl apply -f /tmp/nvme-hostpath-sc.yml
 
-  - name: Set default
-    command: |
+  - name: Patch standard storage class
+    shell: |
       kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+
+  - name: Patch nvme-hostpath storage class
+    shell: |
       kubectl patch storageclass nvme-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'

@@ -10,16 +10,16 @@
         channel: 1.30/stable
 
     - name: Enable dns
-      command: microk8s enable dns
+      shell: microk8s enable dns
 
     - name: Enable hostpath-storage
-      command: microk8s enable hostpath-storage
+      shell: microk8s enable hostpath-storage
 
     - name: Enable metrics-server
-      command: microk8s enable metrics-server
+      shell: microk8s enable metrics-server
 
     - name: Enable metallb
-      command: "microk8s enable metallb:{{ ansible_host }}/32"
+      shell: "microk8s enable metallb:{{ ansible_host }}/32"
 
     - name: Create the microk8s config directory
       ansible.builtin.file:
@@ -28,7 +28,7 @@
         mode: "0755"
 
     - name: Generate microk8s config
-      command: microk8s config > $HOME/.kube/config
+      shell: microk8s config > $HOME/.kube/config
 
     - name: Update .bashrc
       lineinfile:
@@ -59,7 +59,7 @@
   - name: coredns
     block:
       - name: Remove resolv.conf
-        command: rm /etc/resolv.conf
+        shell: rm /etc/resolv.conf
 
       - name: Link resolv.conf
         ansible.builtin.file:
@@ -68,7 +68,7 @@
           state: link
 
       - name: Restart coredns
-        command: echo "restarting coredns"
+        shell: echo "restarting coredns"
         notify: "restart coredns"
 
   - name: UFW
