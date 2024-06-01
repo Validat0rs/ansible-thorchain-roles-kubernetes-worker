@@ -2,5 +2,5 @@
 - name: Setup
   include_file: setup.yml
 
-- name: storage
+- name: Storage
   include_file: storage.yml
