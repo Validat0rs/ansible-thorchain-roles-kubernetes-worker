@@ -25,7 +25,7 @@
 
     - name: Mount
       command: mount -a
-    when: raid_setup == "true"
+    when: raid_setup == 'true'
 
   - name: Copy config
     template:
