@@ -1,0 +1,118 @@
+---
+- name: Setup
+  block:
+  - name: microk8s
+    block:
+    - name: Install
+      community.general.snap:
+        name: microk8s
+        classic: true
+        channel: 1.30/stable
+
+    - name: Enable microk8s services
+      command: microk8s enable dns hostpath-storage metrics-server metallb
+
+    - name: Create the microk8s config directory
+      ansible.builtin.file:
+        path: $HOME/.kube
+        state: directory
+        mode: '0755'
+
+    - name: Generate microk8s config
+      command: microk8s config > $HOME/.kube/config
+
+    - name: Update .bashrc
+      lineinfile:
+        path: $HOME/.bashrc
+        line: | 
+          export KUBECONFIG=$HOME/.kube/config
+          export KUBE_EDITOR="vi"
+          source <(kubectl completion bash)
+        state: present
+
+  - name: k9s
+    block:
+      - name: Install k9s
+        community.general.snap:
+          name: k9s
+
+      - name: Fix k9s
+        ansible.builtin.file:
+          src: /snap/k9s/current/bin/k9s
+          dest: /snap/bin/k9s
+          state: link
+
+  - name: Install kubectl
+    community.general.snap:
+      name: kubectl
+      classic: true
+
+  - name: coredns
+    block:
+      - name: Remove resolv.conf
+        command: rm /etc/resolv.conf
+
+      - name: Link resolv.conf
+        ansible.builtin.file:
+          src: /run/systemd/resolve/resolv.conf
+          dest: /etc/resolv.conf
+          state: link
+
+      - name: Restart coredns
+        command: echo "restarting coredns"
+        notify: "restart coredns"
+
+  - name: UFW
+    block:
+      - name: Reset
+        community.general.ufw:
+          state: reset
+
+      - name: Allow incoming
+        community.general.ufw:
+          rule: allow
+          direction: incoming
+
+      - name: Allow outgoing
+        community.general.ufw:
+          rule: allow
+          direction: outgoing
+
+      - name: Allow port 22
+        community.general.ufw:
+          rule: allow
+          direction: incoming
+          port: 22
+
+      - name: Allow port 5040
+        community.general.ufw:
+          rule: allow
+          direction: incoming
+          port: 5040
+
+      - name: Allow port 6040
+        community.general.ufw:
+          rule: allow
+          direction: incoming
+          port: 6040
+
+      - name: Allow port 27146
+        community.general.ufw:
+          rule: allow
+          direction: incoming
+          port: 27146
+
+      - name: Allow port 51820
+        community.general.ufw:
+          rule: allow
+          direction: incoming
+          port: 51820
+
+      - name: Deny incoming
+        community.general.ufw:
+          rule: deny
+          direction: incoming
+
+      - name: Enable UFW
+        community.general.ufw:
+          state: enabled

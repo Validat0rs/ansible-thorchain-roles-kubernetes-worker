@@ -1,0 +1,6 @@
+---
+- name: Setup
+  include_file: setup.yml
+
+- name: storage
+  include_file: storage.yml

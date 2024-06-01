@@ -1,0 +1,4 @@
+---
+- name: Restart coredns
+  shell: microk8s kubectl rollout restart -n kube-system deployment/coredns
+  listen: "restart coredns"

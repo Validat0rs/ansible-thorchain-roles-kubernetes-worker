@@ -1,0 +1,51 @@
+---
+- name: Storage
+  block:
+  - name: mdadm
+    block:
+    - name: Configure
+      command: |
+        mdadm --create --verbose /dev/{{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices }}
+        mkfs.btrfs -f /dev/{{ raid_md_device }}
+        mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf
+        update-initramfs -u
+    
+    - name: Get device UUID
+      command: blkid /dev/{{ raid_md_device }}
+      register: blkid_uuid
+
+    - name: Update /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ blkid_uuid.stdout }} {{ mount_point }} btrfs defaults 0 0"
+        state: present
+    when: raid_setup is true
+
+# - mdadm --create --verbose /dev/md100 --level=0 --raid-devices=6 /dev/nvme0n1 /dev/nvme2n1 /dev/nvme3n1 /dev/nvme4n1 /dev/nvme6n1 /dev/nvme7n1
+
+# - mkfs.btrfs -f /dev/md4
+# - mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf
+# - update-initramfs -u
+# - blkid /dev/md4
+# - vi /etc/fstab
+# - systemctl daemon-reload
+# - mount -a
+
+  - name: Copy config
+    template:
+      src: nvme-hostpath-sc.yaml.j2
+      dest: /tmp
+      owner: root
+      group: root
+      mode: "0644"
+
+  - name: Apply config
+    k8s:
+      src: /tmp/nvme-hostpath-sc.yaml
+      state: present
+      apply: true
+
+  - name: Set default
+    command: |
+      kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+      kubectl patch storageclass nvme-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
