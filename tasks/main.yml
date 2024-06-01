@@ -1,9 +1,9 @@
 ---
 - name: Setup
-  include_file: setup.yml
+  include_tasks: setup.yml
 
 - name: Storage
-  include_file: storage.yml
+  include_tasks: storage.yml
 
 - name: Launch
-  include_file: launch.yml
+  include_tasks: launch.yml
