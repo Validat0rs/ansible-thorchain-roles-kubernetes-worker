@@ -5,13 +5,13 @@
     block:
     - name: Configure
       command: |
-        mdadm --create --verbose /dev/{{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices | replace(',', ' ') }}
-        mkfs.btrfs -f /dev/{{ raid_md_device }}
+        mdadm --create --verbose {{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices | replace(',', ' ') }}
+        mkfs.btrfs -f {{ raid_md_device }}
         mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf
         update-initramfs -u
     
     - name: Get device UUID
-      command: blkid /dev/{{ raid_md_device }}
+      command: blkid {{ raid_md_device }}
       register: blkid_uuid
 
     - name: Update /etc/fstab
