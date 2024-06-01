@@ -5,7 +5,7 @@
     block:
     - name: Configure
       command: |
-        mdadm --create --verbose /dev/{{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices }}
+        mdadm --create --verbose /dev/{{ raid_md_device }} --level={{ raid_level }} --raid-devices={{ raid_device_count }} {{ raid_devices | replace(',', ' ') }}
         mkfs.btrfs -f /dev/{{ raid_md_device }}
         mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf
         update-initramfs -u
