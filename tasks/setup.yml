@@ -25,7 +25,7 @@
       ansible.builtin.file:
         path: $HOME/.kube
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Generate microk8s config
       command: microk8s config > $HOME/.kube/config
