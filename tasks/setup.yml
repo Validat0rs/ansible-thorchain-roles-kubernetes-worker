@@ -77,51 +77,18 @@
         community.general.ufw:
           state: reset
 
-      - name: Allow incoming
-        community.general.ufw:
-          rule: allow
-          direction: in
+      # We should ideally use the UFW module here
+      - name: Rules
+        shell: |
+          ufw default allow incoming
+          ufw default allow outgoing
+          ufw allow in on eth0 to any port 22
+          ufw allow in on eth0 to any port 5040
+          ufw allow in on eth0 to any port 6040
+          ufw allow in on eth0 to any port 27146
+          ufw allow in on eth0 to any port 51820
+          ufw deny in on eth0
 
-      - name: Allow outgoing
-        community.general.ufw:
-          rule: allow
-          direction: out
-
-      - name: Allow port 22
-        community.general.ufw:
-          rule: allow
-          direction: in
-          port: 22
-
-      - name: Allow port 5040
-        community.general.ufw:
-          rule: allow
-          direction: in
-          port: 5040
-
-      - name: Allow port 6040
-        community.general.ufw:
-          rule: allow
-          direction: in
-          port: 6040
-
-      - name: Allow port 27146
-        community.general.ufw:
-          rule: allow
-          direction: in
-          port: 27146
-
-      - name: Allow port 51820
-        community.general.ufw:
-          rule: allow
-          direction: in
-          port: 51820
-
-      - name: Deny incoming
-        community.general.ufw:
-          rule: deny
-          direction: in
-
-      - name: Enable UFW
+      - name: Enable
         community.general.ufw:
           state: enabled

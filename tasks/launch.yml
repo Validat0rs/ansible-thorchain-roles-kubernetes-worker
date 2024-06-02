@@ -33,27 +33,7 @@
     args:
       chdir: /usr/src/thorchain-node-launcher/node-launcher
 
-  - name: Destroy loki
-    shell: make destroy-loki
-    args:
-      chdir: /usr/src/thorchain-node-launcher/node-launcher
-
-  - name: Destroy prometheus
-    shell: make destroy-prometheus
-    args:
-      chdir: /usr/src/thorchain-node-launcher/node-launcher
-
-  - name: Destroy dashboard
-    shell: make destroy-dashboard
-    args:
-      chdir: /usr/src/thorchain-node-launcher/node-launcher
-
-  - name: Destroy metrics
-    shell: make destroy-metrics
-    args:
-      chdir: /usr/src/thorchain-node-launcher/node-launcher
-
-  - name: Damons
+  - name: Daemons
     block:
     - name: Checkout branch
       shell: git checkout feat/daemons
@@ -65,16 +45,3 @@
       args:
         chdir: /usr/src/thorchain-node-launcher/node-launcher
     when: launch_daemons == "true"
-
-  - name: THORNode
-    block:
-    - name: Checkout branch
-      shell: git checkout feat/thornode
-      args:
-        chdir: /usr/src/thorchain-node-launcher/node-launcher
-
-    - name: Install
-      shell: yes | NAME={{ namespace }} TYPE=validator NET=mainnet make install
-      args:
-        chdir: /usr/src/thorchain-node-launcher/node-launcher
-    when: launch_thornode == "true"

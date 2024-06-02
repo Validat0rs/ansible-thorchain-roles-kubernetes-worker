@@ -39,7 +39,7 @@
   - name: Copy config
     template:
       src: nvme-hostpath-sc.yml.j2
-      dest: /tmp
+      dest: /tmp/nvme-hostpath-sc.yml
       owner: root
       group: root
       mode: "0644"
@@ -49,7 +49,7 @@
 
   - name: Patch standard storage class
     shell: |
-      kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+      kubectl patch storageclass microk8s-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
   - name: Patch nvme-hostpath storage class
     shell: |
