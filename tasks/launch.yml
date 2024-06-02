@@ -45,3 +45,17 @@
       args:
         chdir: /usr/src/thorchain-node-launcher/node-launcher
     when: launch_daemons == "true"
+
+  - name: THORNode
+    block:
+    - name: Checkout branch
+      shell: git checkout feat/thornode
+      args:
+        chdir: /usr/src/thorchain-node-launcher/node-launcher
+
+    - name: Install
+      shell: |
+        ./scripts/install-thornode.exp {{ thornode_namespace }} {{ thornode_password }}
+      args:
+        chdir: /usr/src/thorchain-node-launcher/node-launcher 
+    when: launch_thornode == "true"
